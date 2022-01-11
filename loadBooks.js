@@ -9,27 +9,27 @@ readdir(directoryPath, (err, files) => {
         return console.log('Unable to scan directory: ' + err);
     }
 
-    const bookPromises = files.map((file) => parseBook(directoryPath + '/' + file));
+    const bookPromises = files.map((file) => parseBook(directoryPath, file));
 
     Promise.all(bookPromises).then((books) => sendBooksToDB(books).catch(console.error));
 });
 
-function parseBook(path) {
-    let title = readFile(path + '/title.txt').then((content) => {
+function parseBook(path, folder) {
+    let title = readFile(`${path}/${folder}/title.txt`).then((content) => {
         return content.toString().trim();
     }).catch((error) => {
         console.error(error.message);
         throw error;
     });
 
-    let description = readFile(path + '/description.txt').then((content) => {
+    let description = readFile(`${path}/${folder}/description.txt`).then((content) => {
         return content.toString().trim();
     }).catch((error) => {
         console.error(error.message);
         throw error;
     });
 
-    let price = readFile(path + '/price.txt').then((content) => {
+    let price = readFile(`${path}/${folder}/price.txt`).then((content) => {
         return content.toString().trim();
     }).catch((error) => {
         console.error(error.message);
@@ -37,8 +37,7 @@ function parseBook(path) {
     });
 
     return Promise.all([title, description, price]).then(([title, description, price]) => {
-        const id = title.split(' ').join('_');
-        return {id, path, title, description, price};
+        return {id: folder, path, title, description, price};
     });
 }
 
