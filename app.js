@@ -11,7 +11,7 @@ app.use(express.json());
 async function start() {
     try {
         await mongoose.connect(
-            'mongodb+srv://dmitriy:HVCglhDVJwKeQVLr@cluster0.gpgzl.mongodb.net/books',
+            'mongodb+srv://<username>:<password>@cluster0.gpgzl.mongodb.net/books',
             {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,

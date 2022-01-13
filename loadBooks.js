@@ -42,7 +42,7 @@ function parseBook(path, folder) {
 }
 
 async function sendBooksToDB(books) {
-    const uri = 'mongodb+srv://dmitriy:HVCglhDVJwKeQVLr@cluster0.gpgzl.mongodb.net/app?retryWrites=true&w=majority';
+    const uri = 'mongodb+srv://<username>:<password>@cluster0.gpgzl.mongodb.net/app?retryWrites=true&w=majority';
     const client = new MongoClient(uri);
 
     try {
