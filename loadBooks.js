@@ -4,12 +4,13 @@ const fs = require('fs');
 const {promises: {readFile}} = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
+const config = require('config');
 
-const SCOPES = ['https://www.googleapis.com/auth/drive'];
-const TOKEN_PATH = 'token.json';
+const SCOPES = [config.get('googleDrive.scopes')];
+const TOKEN_PATH = config.get('googleDrive.token');
 
-const directoryPath = path.dirname('/home/dmitriy/Documents/books/1');
-const driveUri = 'https://drive.google.com/uc?id=';
+const directoryPath = path.dirname(config.get('pathFolder'));
+const driveUri = config.get('googleDrive.driveUri');
 
 fs.readdir(directoryPath, (err, files) => {
     if (err) {
@@ -50,7 +51,7 @@ async function parseBook(path, folder) {
 
     const imageId = await readFile('credentials.json')
         .then(content => {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 authorize(JSON.parse(content), auth => resolve(uploadFile(auth, `${path}/${folder}`, image)));
             })
         })
@@ -58,7 +59,7 @@ async function parseBook(path, folder) {
 
     function uploadFile(auth, path, file) {
         const drive = google.drive({version: 'v3', auth});
-        const folderId = '1Uy29onZRA8xrXQO1nXMtMTPgk-o9hV0Y';
+        const folderId = config.get('googleDrive.folderId');
         const fileMetadata = {
             'name': file,
             parents: [folderId]
@@ -91,7 +92,7 @@ async function parseBook(path, folder) {
 }
 
 async function sendBooksToDB(books) {
-    const uri = 'mongodb+srv://<username>:<password>@cluster0.gpgzl.mongodb.net/app?retryWrites=true&w=majority';
+    const uri = config.get('dbConfig.mongoUri');
     const client = new MongoClient(uri);
 
     try {

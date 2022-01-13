@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "config": "^3.3.7",
     "express": "^4.17.2",
     "googleapis": "^39.2.0",
     "mongodb": "^4.3.0",

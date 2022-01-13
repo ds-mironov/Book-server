@@ -8,6 +8,7 @@ node_modules
 .prettierrc
 credentials.json
 token.json
+config
 
 # testing
 /coverage

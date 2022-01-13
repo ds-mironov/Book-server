@@ -1,7 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const config = require('config');
 
-const PORT = process.env.PORT || 4000;
+const PORT = config.get('dbConfig.port') || 4000;
 const app = express();
 
 app.use(express.json());
@@ -11,7 +12,7 @@ app.use(express.json());
 async function start() {
     try {
         await mongoose.connect(
-            'mongodb+srv://<username>:<password>@cluster0.gpgzl.mongodb.net/books',
+            config.get('dbConfig.mongoUri'),
             {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
