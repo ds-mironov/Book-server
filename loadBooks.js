@@ -1,12 +1,13 @@
 const {MongoClient} = require('mongodb');
 const path = require('path');
 const fs = require('fs');
+const {promises: {readFile}} = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
-const {promises: {readFile}} = require('fs');
 
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
 const TOKEN_PATH = 'token.json';
+
 const directoryPath = path.dirname('/home/dmitriy/Documents/books/1');
 const driveUri = 'https://drive.google.com/uc?id=';
 
@@ -90,7 +91,7 @@ async function parseBook(path, folder) {
 }
 
 async function sendBooksToDB(books) {
-    const uri = 'mongodb+srv://dmitriy:HVCglhDVJwKeQVLr@cluster0.gpgzl.mongodb.net/app?retryWrites=true&w=majority';
+    const uri = 'mongodb+srv://<username>:<password>@cluster0.gpgzl.mongodb.net/app?retryWrites=true&w=majority';
     const client = new MongoClient(uri);
 
     try {
