@@ -1,13 +1,10 @@
-const {MongoClient} = require('mongodb');
 const path = require('path');
 const fs = require('fs');
 const {readFile} = require('fs/promises');
-const readline = require('readline');
 const {google} = require('googleapis');
 const config = require('config');
-
-const SCOPES = [config.get('googleDrive.scopes')];
-const TOKEN_PATH = config.get('googleDrive.token');
+const sendBooksToDB = require('./services/mongodb.service');
+const authorize = require('./services/google.drive.service')
 
 const directoryPath = path.dirname(config.get('pathFolder'));
 const driveUri = config.get('googleDrive.driveUri');
@@ -80,64 +77,5 @@ async function parseBook(path, folder) {
         })
     }
 
-    const imageUri = driveUri + imageId;
-
-    return {...bookInfo, image: imageUri};
-}
-
-async function sendBooksToDB(books) {
-    const uri = config.get('dbConfig.mongoUri');
-    const client = new MongoClient(uri);
-
-    try {
-        await client.connect();
-        await createMultipleListings(client, books);
-    } catch (e) {
-        console.error(e);
-    } finally {
-        await client.close();
-    }
-}
-
-async function createMultipleListings(client, newListings) {
-    const result = await client.db("book_server").collection("books").insertMany(newListings);
-
-    console.log(`${result.insertedCount} new listing(s) created with the following id(s):`);
-    console.log(result.insertedIds);
-}
-
-function authorize(credentials, callback) {
-    const {client_secret, client_id, redirect_uris} = credentials.installed;
-    const oAuth2Client = new google.auth.OAuth2(
-        client_id, client_secret, redirect_uris[0]);
-
-    fs.readFile(TOKEN_PATH, (err, token) => {
-        if (err) return getAccessToken(oAuth2Client, callback);
-        oAuth2Client.setCredentials(JSON.parse(token));
-        callback(oAuth2Client);
-    });
-}
-
-function getAccessToken(oAuth2Client, callback) {
-    const authUrl = oAuth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: SCOPES,
-    });
-    console.log('Authorize this app by visiting this url:', authUrl);
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-    rl.question('Enter the code from that page here: ', (code) => {
-        rl.close();
-        oAuth2Client.getToken(code, (err, token) => {
-            if (err) return console.error('Error retrieving access token', err);
-            oAuth2Client.setCredentials(token);
-            fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-                if (err) return console.error(err);
-                console.log('Token stored to', TOKEN_PATH);
-            });
-            callback(oAuth2Client);
-        });
-    });
+    return {...bookInfo, image: driveUri + imageId};
 }

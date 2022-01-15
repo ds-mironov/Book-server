@@ -31,7 +31,7 @@ class BookController {
         }
 
         try {
-            const book = await Book.findOne({id});
+            const book = await Book.findOne({ISBN: +id});
             res.status(200).json(book);
         } catch (e) {
             res.status(500).json(e.message);
