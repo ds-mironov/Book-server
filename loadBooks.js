@@ -1,7 +1,7 @@
 const {MongoClient} = require('mongodb');
 const path = require('path');
 const fs = require('fs');
-const {promises: {readFile}} = require('fs');
+const {readFile} = require('fs/promises');
 const readline = require('readline');
 const {google} = require('googleapis');
 const config = require('config');
@@ -23,15 +23,13 @@ fs.readdir(directoryPath, (err, files) => {
 });
 
 async function parseBook(path, folder) {
-    const getContentFile = async (file) => {
-        return await readFile(`${path}/${folder}/${file}`)
-            .then((content) => {
-                return content.toString().trim();
-            }).catch((error) => {
-                console.error(error.message);
-                throw error;
-            });
-    }
+    const bookInfo = await readFile(`${path}/${folder}/book_info.json`)
+        .then((content) => {
+            return JSON.parse(content);
+        }).catch((error) => {
+            console.error(error.message);
+            throw error;
+        });
 
     const searchImage = (path, filter) => {
         if (!fs.existsSync(path)) {
@@ -44,10 +42,6 @@ async function parseBook(path, folder) {
     }
 
     const image = searchImage(`${path}/${folder}`, '.jpg');
-
-    const title = await getContentFile('title.txt');
-    const description = await getContentFile('description.txt');
-    const price = await getContentFile('price.txt');
 
     const imageId = await readFile('credentials.json')
         .then(content => {
@@ -88,7 +82,7 @@ async function parseBook(path, folder) {
 
     const imageUri = driveUri + imageId;
 
-    return {id: folder, path, title, description, price, image: imageUri};
+    return {...bookInfo, image: imageUri};
 }
 
 async function sendBooksToDB(books) {

@@ -1,13 +1,14 @@
-const express = require("express");
-const mongoose = require("mongoose");
+const express = require('express');
 const config = require('config');
+const mongoose = require('mongoose');
 
-const PORT = config.get('dbConfig.port') || 4000;
 const app = express();
 
 app.use(express.json());
 
-// app.use('/api/books', require('./routes/books.routes'));
+app.use('/api/', require('./routes/book.routes'));
+
+const PORT = config.get('dbConfig.port') || 4000;
 
 async function start() {
     try {
