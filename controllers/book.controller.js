@@ -2,8 +2,7 @@ const Book = require('../models/Book');
 
 class BookController {
     async getBooks(req, res) {
-        console.log(req.query);
-        const { page = 1, limit = 9 } = req.query;
+        const { page, limit } = req.query;
 
         try {
             const books = await Book.find()
@@ -15,6 +14,7 @@ class BookController {
 
             res.json({
                 books,
+                totalBooks: count,
                 totalPages: Math.ceil(count / limit),
                 currentPage: page
             });
