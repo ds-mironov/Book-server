@@ -2,7 +2,7 @@ const {Schema, model} = require('mongoose');
 
 const schema = new Schema({
     ISBN: {
-        type: Number, required: true, unique: true
+        type: Number, required: true, index: true, unique: true
     },
     title: {
         type: String, required: true
@@ -14,7 +14,9 @@ const schema = new Schema({
         type: String, required: true
     },
     price: {
-        type: Object, required: true
+        currency: {type: String, required: true},
+        value: {type: Number, required: true},
+        displayValue: {type: String, required: true}
     },
     image: {
         type: String, required: true
