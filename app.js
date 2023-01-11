@@ -21,6 +21,7 @@ const PORT = config.get('dbConfig.port') || 4000;
 
 async function start() {
     try {
+        mongoose.set("strictQuery", false);
         await mongoose.connect(
             config.get('dbConfig.mongoUri'),
             {
